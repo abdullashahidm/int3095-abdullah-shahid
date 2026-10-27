@@ -8,6 +8,11 @@ import matplotlib as mt
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score,classification_report
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
 
 #--- Method(s) ---#
 
@@ -49,4 +54,13 @@ print(diabetes_data.describe())
 X=diabetes_data[["Pregnancies","Glucose","BloodPressure","SkinThickness","Insulin","BMI","DiabetesPedigreeFunction","Age"]]
 Y=diabetes_data["Outcome"]
 
-X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,random_state=42,shuffle=True)
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,random_state=42,shuffle=True,stratify=Y)
+
+seperator()
+print(f"Length of X_train is {len(X_train)}")
+print(f"Length of X_test is {len(X_test)}")
+print(f"Length of Y_train is {len(Y_train)}")
+print(f"Length of Y_test is {len(Y_test)}")
+
+knn=KNeighborsClassifier(n_neighbors=3)
+knn.fit(X_train,Y_train)
