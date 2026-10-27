@@ -6,6 +6,10 @@ import numpy as np
 import pandas as pd
 import matplotlib as mt
 import sklearn
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+#--- Method(s) ---#
 
 def seperator():
     print("******************************"*5)
@@ -41,3 +45,8 @@ diabetes_data[to_replace_columns]=diabetes_data[to_replace_columns].fillna(media
 print(diabetes_data.describe())
 
 #--- Task 3 ---# Split the data & train three models
+
+X=diabetes_data[["Pregnancies","Glucose","BloodPressure","SkinThickness","Insulin","BMI","DiabetesPedigreeFunction","Age"]]
+Y=diabetes_data["Outcome"]
+
+X_train,X_test,Y_train,Y_test=train_test_split(X,Y,test_size=0.2,random_state=42,shuffle=True)
