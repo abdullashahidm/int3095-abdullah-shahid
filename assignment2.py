@@ -4,15 +4,10 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib as mt
-import sklearn
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score,classification_report
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 
 #--- Method(s) ---#
 
@@ -62,5 +57,18 @@ print(f"Length of X_test is {len(X_test)}")
 print(f"Length of Y_train is {len(Y_train)}")
 print(f"Length of Y_test is {len(Y_test)}")
 
-knn=KNeighborsClassifier(n_neighbors=3)
-knn.fit(X_train,Y_train)
+seperator()
+print("Training KNNN model")
+knn_model=KNeighborsClassifier(n_neighbors=3)
+knn_model.fit(X_train,Y_train)
+
+seperator()
+print("Training Decision Tree Model")
+dec_tree_model=DecisionTreeClassifier(random_state=42)
+dec_tree_model.fit(X_train,Y_train)
+
+seperator()
+print("Training Logistic Regression model")
+logistic_reg_model=LogisticRegression(solver="lbfgs",random_state=42,max_iter=500,)
+logistic_reg_model.fit(X_train,Y_train)
+
