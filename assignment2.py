@@ -43,7 +43,7 @@ print((diabetes_data==0).sum())
 seperator()
 
 to_replace_columns=["Glucose","BloodPressure","SkinThickness","Insulin","BMI"]   
-diabetes_data[to_replace_columns]=diabetes_data[to_replace_columns].replace(0, np.nan)
+diabetes_data[to_replace_columns]=diabetes_data[to_replace_columns].replace(0,np.nan)
 print(diabetes_data.isnull().sum())
 seperator()
 
