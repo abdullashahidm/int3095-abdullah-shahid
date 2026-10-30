@@ -112,8 +112,8 @@ for model_name,model_pipeline in pipelines.items():
     scaled_accuracies[model_name]=accuracy
 
 seperator()
-for model_name,accuracy_score in scaled_accuracies.items():
-    print(f"Scaled data {model_name} model has accuracy {accuracy_score:.4f}")
+for model_name,acc_score in scaled_accuracies.items():
+    print(f"Scaled data {model_name} model has accuracy {acc_score:.4f}")
 
 comparison_table=pd.DataFrame({
     "Unscaled accuracy":list(unscaled_accuracies.values()),
@@ -121,6 +121,8 @@ comparison_table=pd.DataFrame({
 },index=["KNN","Dec. tree","Logistic reg."])
 seperator()
 print(comparison_table)
+#Saving this comparison table to print later for Task 6
+original_comparison_table=comparison_table
 seperator()
 
 #As KNN relies on calculating physical distance between points so scaling points changes that distance between so changes KNN
@@ -164,3 +166,65 @@ print(classification_report(Y_test,Y_pred,target_names=["Not Diabetic","Diabetic
 seperator()
 
 #--- Task 6 ---# Reflection
+
+print("Q1: Which model was most accurate on the test set, and by how much?")
+print("Ans: KNN model was the most accurate on scaled data at 72.1% (3.9% better than Decision tree & 1.3% better than Logistic regression). And as for unscaled data, Logistic regression was the most accurate with 70.1% compared to 68.2% on the other two\n")
+seperator()
+
+print("Q2: The models scored close to 100% on Iris. Why are they much less accurate here?")
+print("Ans: As the flower's features are distinct from one another, but in the case of detecting diabetes, some features may be similar for two people even if one person has Diabetes and on does not. Thus, these sorts of feature overlaps make the model less accurate\n")
+seperator()
+
+print("Q3: 65% of patients are not diabetic. What accuracy would a model get by always predicting 'not diabetic'? Are your models much better than that?")
+print("Ans: That model would get 65% accuracy, whereas as mine one is more accurate at 72.1%. Thus, my model is slightly better, but perhaps not ideal\n")
+seperator()
+
+print("Q4: Change n_neighbors to 5, 9 and 15. How does the accuracy of your scaled KNN pipeline change?")
+for _ in [5,9,15]:
+    pipeline=make_pipeline(StandardScaler(),KNeighborsClassifier(n_neighbors=_))
+    pipeline.fit(X_train,Y_train)
+    predicted_X_values=pipeline.predict(X_test)
+    acc=accuracy_score(Y_test,predicted_X_values)
+    print(f"{_} neighbors has Accuracy: {acc:.4f}")
+print("For 5 neighbors, the model accuracy increases to 0.75 which far higher than 0.72 and this indicates that 5 neighbors is more suitable. This decreases slightly for 9 & 12 neighbors, but it still ends up being more accurate than 3 neighbors\n")
+seperator()
+
+print("Q5: A doctor wants to use one model for screening. Which would you choose, and why?")
+print("Ans: Due to the medical context, rather the maximum accuracy, we would prefer highest recall for Diabetic patients\n")
+
+dec_tree=pipelines["Decision Tree"]
+Y_pred=dec_tree.predict(X_test)
+print("Classifications report for Decision Tree model:\n")
+print(classification_report(Y_test,Y_pred,target_names=["Not Diabetic","Diabetic"]))
+
+log_reg=pipelines["Logistic Regression"]
+Y_pred=log_reg.predict(X_test)
+print("Classifications report for Logistic regression model:\n")
+print(classification_report(Y_test,Y_pred,target_names=["Not Diabetic","Diabetic"]))
+
+print("When we compare these reports for the KNN model printed above, we can see that the KNN model has the highest recall for Diabetic patients (which is 0.61 as compared to 0.48 for Decision tree & 0.5 for Logistic regression. Hence, the scaled data KNN model is the most recommended choice)\n")
+seperator()
+
+print("Q6: Re-run your three models on the original data without cleaning. Did handling the missing values change the accuracies? Suggest a reason.")
+print("Ans: In order to answer that, we can re-run our above code, but this type ommitting the data cleaning step\n")
+
+uncleaned_data=pd.read_csv("diabetes.csv")
+X_uncleaned=uncleaned_data[["Pregnancies","Glucose","BloodPressure","SkinThickness","Insulin","BMI","DiabetesPedigreeFunction","Age"]]
+Y_uncleaned=uncleaned_data["Outcome"]
+
+X_uncleaned_training,X_uncleaned_testing,Y_uncleaned_training,Y_uncleaned_testing=train_test_split(X_uncleaned,Y_uncleaned,test_size=0.2,random_state=42,stratify=Y_uncleaned)
+
+uncleaned_scaled_accuracies={}
+for model_name,pipe in pipelines.items():
+    pipe.fit(X_uncleaned_training,Y_uncleaned_training)
+    acc_score=accuracy_score(Y_uncleaned_testing,pipe.predict(X_uncleaned_testing))
+    uncleaned_scaled_accuracies[model_name]=acc_score
+
+for unclean_model,uncleaned_model_accuracy in uncleaned_scaled_accuracies.items():
+    print(f"{unclean_model} model on uncleaned & scaled data has accuracy {uncleaned_model_accuracy:.4f}")
+
+print()
+print(original_comparison_table)
+print()
+
+print("Comparing model accuracies for scaled data shows that for KNN model, accuracy drops when using uncleaned data from 72 to 69. This is due to the changed physical distances between uncleaned (zeros) points")
