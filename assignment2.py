@@ -14,6 +14,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 from sklearn.metrics import accuracy_score
 
+import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report
+
 #--- Method(s) ---#
 
 def seperator():
@@ -90,7 +93,7 @@ seperator()
 for model_name,accuracy_rating in unscaled_accuracies.items():
     print(f"Unscaled data {model_name} has accuracy {accuracy_rating:.4f}")
 
-#--- Task 4 ---#
+#--- Task 4 ---# Scale the features with a pipline
 
 scaled_accuracies={}
 
@@ -118,9 +121,46 @@ comparison_table=pd.DataFrame({
 },index=["KNN","Dec. tree","Logistic reg."])
 seperator()
 print(comparison_table)
+seperator()
 
 #As KNN relies on calculating physical distance between points so scaling points changes that distance between so changes KNN
 #Since Decision Tree model relies on logical checks on data, logic checks output should not change if all data is scaled in the same way
 #Scaler ensures no Data Leakage, because the Mean & S.d. used are only of the Training data set and not the entire data set
 
 #--- Task 5 ---# Compare the models
+
+models=["KNN","Decision tree","Logistic regression"]
+
+unscaled_vals=[accuracy*100 for accuracy in unscaled_accuracies.values()]
+scaled_vals=[accuracy*100 for accuracy in scaled_accuracies.values()]
+
+x=np.arange(len(models))
+width=0.35
+
+fig,ax=plt.subplots(figsize=(10, 6))
+
+rects1=ax.bar(x-width/2,unscaled_vals,width,label="Unscaled",color="blue")
+rects2=ax.bar(x+width/2,scaled_vals,width,label="Scaled",color="purple")
+
+ax.set_ylabel("Accuracy(%)")
+ax.set_title("Scaled & unscaled data Model accuracies")
+ax.set_xticks(x)
+ax.set_xticklabels(models)
+ax.set_ylim(0, 100)  
+ax.legend()
+
+ax.bar_label(rects1,fmt="%.1f%%",padding=3)
+ax.bar_label(rects2,fmt="%.1f%%",padding=3)
+
+plt.tight_layout()
+plt.savefig("accuracy-comparison.png")
+plt.show()
+seperator()
+
+best=pipelines["KNN"]
+Y_pred=best.predict(X_test)
+print("Classifications report for best performing (KNN) model:\n")
+print(classification_report(Y_test,Y_pred,target_names=["Not Diabetic","Diabetic"]))
+seperator()
+
+#--- Task 6 ---# Reflection
